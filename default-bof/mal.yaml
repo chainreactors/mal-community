@@ -1,0 +1,10 @@
+name: default-bof
+type: lua
+author: M09Ic
+version: v0.0.1
+entry: bof.lua
+global: true
+depend_module: 
+  - bof
+
+
