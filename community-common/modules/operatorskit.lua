@@ -1,6 +1,6 @@
 -- Master Lua Script to load all Beacon Object Files from the OperatorsKit.
 local operatorskit = {}
-operatorskit.bof_dir = ""
+operatorskit.bof_dir = "OperatorsKit/"
 
 -- Addexclusion
 function operatorskit.parse_addexclusion(args)
