@@ -1,7 +1,7 @@
 -- to do
 local elevate = {}
 elevate_dir = "ElevateKit/"
-function new_sacrifice_lua()
+function new_sac()
     local sac = new_sacrifice(0,false,false,false,"")
 end
 -- start ms14-058

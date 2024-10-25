@@ -6,3 +6,6 @@ entry: main.lua
 global: true
 depend_module:
   - bof
+  - execute_exe
+  - execute_dll
+  - execute_assembly

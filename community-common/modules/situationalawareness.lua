@@ -1,6 +1,6 @@
 -- CS-Situational-Awareness-BOF Module
 local situational = {}
-situational.bof_dir = "situational/"
+situational.bof_dir = "SituationalAwareness/"
 
 -- dir
 function situational.parse_dir(args)
