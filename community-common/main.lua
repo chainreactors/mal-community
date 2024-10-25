@@ -5,6 +5,7 @@ require("modules.remoteopsbof")
 require("modules.operatorskit")
 require("modules.rt.rtkit_bof")
 require("modules.rt.rtkit_recon")
+require("modules.noconsolation.noconsolation")
 
 
 

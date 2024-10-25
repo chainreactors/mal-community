@@ -1,0 +1,40 @@
+name: Nightly Release
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  nightly-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Find and package community directories
+        shell: bash
+        run: |
+          rm -f community-*.tar.gz
+          for dir in community-*; do
+            if [ -d "$dir" ]; then
+              tar -czf "${dir}.tar.gz" -C "$dir" .
+            fi
+          done
+
+      - name: Update Nightly Release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: nightly
+          name: "Nightly Release"
+          prerelease: true
+          body: 'This nightly release is for testing purposes only'
+          files: |
+            ./community-*.tar.gz
