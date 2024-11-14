@@ -3,7 +3,7 @@ type: lua
 author: M09Ic
 version: v0.0.1
 entry: main.lua
-global: true
+global: false
 depend_module:
   - bof
   - execute_exe
