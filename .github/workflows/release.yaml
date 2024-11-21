@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'The tag name for the release'
+        required: true
+        default: 'v0.0.1'
+      draft:
+        description: 'Create a draft release'
+        required: false
+        default: 'true'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-22.04
+    outputs:
+      VERSION: ${{ steps.set_version.outputs.VERSION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set Version
+        id: set_version
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION=${{ inputs.tag_name }}
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.set_version.outputs.VERSION }}
+          release_name: Release ${{ steps.set_version.outputs.VERSION }}
+          body: |
+            Release ${{ steps.set_version.outputs.VERSION }}
+          draft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft == 'true' }}
+          prerelease: false
+
+      - name: Find and package community directories
+        shell: bash
+        run: |
+          rm -f community-*.tar.gz
+          for dir in community-*; do
+            if [ -d "$dir" ]; then
+              tar -czf "${dir}.tar.gz" -C "$dir" .
+            fi
+          done
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for file in community-*.tar.gz; do
+            filename=$(basename "$file")
+            echo "Uploading $filename"
+            gh release upload ${{ steps.set_version.outputs.VERSION }} $filename
+          done
+        shell: bash
