@@ -1,0 +1,12 @@
+name: community-elevate
+type: lua
+author: M09Ic
+version: v0.0.1
+entry: main.lua
+depend_module: 
+  - execute_dll
+  - execute_exe
+  - inline_exe
+  - bof
+
+
