@@ -1,0 +1,11 @@
+name: community-persistence
+type: lua
+author: M09Ic
+version: v0.0.1
+entry: main.lua
+depend_module: 
+  - bof
+  - dllspawn
+  - powerpick
+
+
