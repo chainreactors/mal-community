@@ -3,7 +3,7 @@ function load_rem()
 
     local task = rpc.LoadRem(active():Context(), ProtobufMessage.New("modulepb.Request", {
         Name = "load_rem",
-        Bin = read_resource("chainreactors/rem.dll"),
+        Bin = read_resource("proxy/rem.dll"),
     }))
     wait(task)
 end
@@ -33,19 +33,19 @@ command("rem_community:socks5", run_socks5, "serving socks5 with rem", "T1090")
 
 
 function run_rem_connect(arg_0)
-    rem(active(), arg_0, { "-n" })
+    rem(active(), arg_0, { "-c", rem_link(arg_0), "-n" })
 end
 
 command("rem_community:connect", run_rem_connect, "connect to rem", "")
 
 
-function run_rem_fork(arg_0, flag_mod, flag_remote_url, flag_local_url)
+function run_rem_fork(arg_0, arg_1, flag_mod, flag_remote_url, flag_local_url)
     local rpc = require("rpc")
     local task = rpc.RemCtrl(active():Context(), ProtobufMessage.New("clientpb.REMAgent", {
-        Id = arg_0,
+        PipelineId = arg_0,
+        Id = arg_1,
         Args = { "-r", flag_remote_url, "-l", flag_local_url, "-m", flag_mod },
     }))
-    wait(task)
 end
 
 command("rem_community:fork", run_rem_fork, "fork rem", "")
@@ -60,3 +60,15 @@ function run_rem(flag_pipe, args)
 end
 
 command("rem_community:run", run_rem, "run rem", "")
+
+
+function get_rem_log(arg_0, arg_1)
+    local rpc = require("rpc")
+    local log = rpc.RemLog(active():Context(), ProtobufMessage.New("clientpb.REMAgent", {
+        Id = arg_1,
+        PipelineId = arg_0,
+    }))
+    print(log.Log)
+end
+
+command("rem_community:log", get_rem_log, "get rem log", "")
