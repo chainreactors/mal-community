@@ -8,7 +8,8 @@ function load_rem()
     wait(task)
 end
 
-command("rem_community:load", load_rem, "load rem with rem.dll", "")
+local rem_load_cmd = command("rem_community:load", load_rem, "load rem with rem.dll", "")
+bind_args_completer(rem_load_cmd, { rem_completer() })
 
 function build_rem_cmdline(pipe, mod, remote_url, local_url)
     local link = rem_link(pipe)
@@ -29,15 +30,15 @@ function run_socks5(arg_0, flag_port, flag_user, flag_pass)
         build_rem_cmdline(arg_0, "reverse", "socks5://" .. flag_user .. ":" .. flag_pass .. "@0.0.0.0:" .. flag_port, ""))
 end
 
-command("rem_community:socks5", run_socks5, "serving socks5 with rem", "T1090")
-
+local rem_socks_cmd = command("rem_community:socks5", run_socks5, "serving socks5 with rem", "T1090")
+bind_args_completer(rem_socks_cmd, { rem_completer() })
 
 function run_rem_connect(arg_0)
     rem(active(), arg_0, { "-c", rem_link(arg_0), "-n" })
 end
 
-command("rem_community:connect", run_rem_connect, "connect to rem", "")
-
+local rem_connect_cmd = command("rem_community:connect", run_rem_connect, "connect to rem", "")
+bind_args_completer(rem_connect_cmd, { rem_completer() })
 
 function run_rem_fork(arg_0, arg_1, flag_mod, flag_remote_url, flag_local_url)
     local rpc = require("rpc")
@@ -48,7 +49,8 @@ function run_rem_fork(arg_0, arg_1, flag_mod, flag_remote_url, flag_local_url)
     }))
 end
 
-command("rem_community:fork", run_rem_fork, "fork rem", "")
+local rem_fork = command("rem_community:fork", run_rem_fork, "fork rem", "")
+bind_args_completer(rem_fork, { rem_completer(), rem_agent_completer() })
 
 function run_rem(flag_pipe, args)
     local session = active()
@@ -59,8 +61,8 @@ function run_rem(flag_pipe, args)
     return execute_exe(session, script_resource(rem_path), args, true, 600, arch, "", new_sac())
 end
 
-command("rem_community:run", run_rem, "run rem", "")
-
+local rem_run_cmd = command("rem_community:run", run_rem, "run rem", "")
+bind_args_completer(rem_run_cmd, { rem_completer() })
 
 function get_rem_log(arg_0, arg_1)
     local rpc = require("rpc")
@@ -71,4 +73,5 @@ function get_rem_log(arg_0, arg_1)
     print(log.Log)
 end
 
-command("rem_community:log", get_rem_log, "get rem log", "")
+local log_cmd = command("rem_community:log", get_rem_log, "get rem log", "")
+bind_args_completer(log_cmd, { rem_completer(), rem_agent_completer() })
