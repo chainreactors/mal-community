@@ -1,9 +1,8 @@
--- Master Lua Script to load all Beacon Object Files from the OperatorsKit.
-local operatorskit = {}
-operatorskit.bof_dir = "OperatorsKit/"
+-- Master Lua Script to load all Beacon Object Files from the 
+local bof_dir = "OperatorsKit/"
 
 -- Addexclusion
-function operatorskit.parse_addexclusion(args)
+local function parse_addexclusion(args)
     if #args < 2 then
         error("Please specify one of the following exclusion types: path | process | extension.")
     end
@@ -15,16 +14,16 @@ function operatorskit.parse_addexclusion(args)
     end
     return bof_pack("zZ", excltype, excldata)
 end
-function operatorskit.run_addexclusion(args)
+local function run_addexclusion(args)
     local session = active()
-    args = operatorskit.parse_addexclusion(args)
-    local bof_path = operatorskit.bof_dir .. "AddExclusion/addexclusion" .. ".o"
+    args = parse_addexclusion(args)
+    local bof_path = bof_dir .. "AddExclusion/addexclusion" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:addexclusion", operatorskit.run_addexclusion, "Command: operatorskit addexclusion <exclusion type> <exclusion data>", "T1562.001")
+command("operatorskit:addexclusion", run_addexclusion, "Command: operatorskit addexclusion <exclusion type> <exclusion data>", "T1562.001")
 
 --- Start Addfirewallrule
-function operatorskit.parse_addfirewallrule(args)
+local function parse_addfirewallrule(args)
     if #args < 3 then
         error("Please specify one of the following options: in | out.")
     end
@@ -39,17 +38,17 @@ function operatorskit.parse_addfirewallrule(args)
     end
     return bof_pack("zZZZZ", direction, port, name, group, description)
 end
-function operatorskit.run_addfirewallrule(args)
+local function run_addfirewallrule(args)
     local session = active()
-    args = operatorskit.parse_addfirewallrule(args)
-    local bof_path = operatorskit.bof_dir .. "AddFirewallRule/addfirewallrule" .. ".o"
+    args = parse_addfirewallrule(args)
+    local bof_path = bof_dir .. "AddFirewallRule/addfirewallrule" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:addfirewallrule", operatorskit.run_addfirewallrule, 'Command: operatorskit addfirewallrule <direction> <port> <name> [group] [description]', "T1562.004")
+command("operatorskit:addfirewallrule", run_addfirewallrule, 'Command: operatorskit addfirewallrule <direction> <port> <name> [group] [description]', "T1562.004")
 --- End Addfirewallrule
 
 -- Start Addlocalcert
-function operatorskit.parse_addlocalcert(args)
+local function parse_addlocalcert(args)
     if #args < 3 then
         error("Please provide path, store name, and friendly name.")
     end
@@ -59,16 +58,16 @@ function operatorskit.parse_addlocalcert(args)
     local cert_content = read(path)
     return bof_pack("bZz", cert_content, store, name) -- todo b validation
 end
-function operatorskit.run_addlocalcert(args)
+local function run_addlocalcert(args)
     local session = active()
-    args = operatorskit.parse_addlocalcert(args)
-    bof_path = operatorskit.bof_dir .. "AddLocalCert/addlocalcert" .. ".o"
+    args = parse_addlocalcert(args)
+    bof_path = bof_dir .. "AddLocalCert/addlocalcert" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:addlocalcert", operatorskit.run_addlocalcert, '"Command: operatorskit addlocalcert <path to certificate.cer file> <store name> "<friendly name>"', "T1553.003")
+command("operatorskit:addlocalcert", run_addlocalcert, '"Command: operatorskit addlocalcert <path to certificate.cer file> <store name> "<friendly name>"', "T1553.003")
 
 -- Addtaskscheduler
-function operatorskit.parse_addtaskscheduler(args)
+local function parse_addtaskscheduler(args)
     if #args < 6 then
         error("Please specify all necessary arguments.")
     end
@@ -97,16 +96,16 @@ function operatorskit.parse_addtaskscheduler(args)
 
     return arg_data
 end
-function operatorskit.run_addtaskscheduler(args)
+local function run_addtaskscheduler(args)
     local session = active()
-    args = operatorskit.parse_addtaskscheduler(args)
-    local bof_path = operatorskit.bof_dir .. "AddTaskScheduler/addtaskscheduler" .. ".o"
+    args = parse_addtaskscheduler(args)
+    local bof_path = bof_dir .. "AddTaskScheduler/addtaskscheduler" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:addtaskscheduler", operatorskit.run_addtaskscheduler, 'Command: operatorskit addtaskscheduler <taskName> <(optional) hostName> <programPath> "<(optional) programArguments>" <type> <optional args>', "T1053.005")
+command("operatorskit:addtaskscheduler", run_addtaskscheduler, 'Command: operatorskit addtaskscheduler <taskName> <(optional) hostName> <programPath> "<(optional) programArguments>" <type> <optional args>', "T1053.005")
 
 -- Start Blindeventlog
-function operatorskit.parse_blindeventlog(args)
+local function parse_blindeventlog(args)
     if #args < 1 then
         error("Please specify one of the following actions: suspend | resume.")
     end
@@ -117,28 +116,28 @@ function operatorskit.parse_blindeventlog(args)
     end
     return bof_pack("z", action)
 end
-function operatorskit.run_blindeventlog(args)
+local function run_blindeventlog(args)
     local session = active()
-    args = operatorskit.parse_blindeventlog(args)
-    bof_path = operatorskit.bof_dir .. "BlindEventlog/blindeventlog" .. ".o"
+    args = parse_blindeventlog(args)
+    bof_path = bof_dir .. "BlindEventlog/blindeventlog" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:blindeventlog", operatorskit.run_blindeventlog, 'Command: operatorskit blindeventlog <action>', "T1070.001")
+command("operatorskit:blindeventlog", run_blindeventlog, 'Command: operatorskit blindeventlog <action>', "T1070.001")
 -- End Blindeventlog
 
 -- Capturenetntlm
-function operatorskit.run_capturenetntlm(args)
+local function run_capturenetntlm(args)
     if #args > 0 then
         error("This command does not accept any arguments.")
     end
     local session = active()
-    local bof_path = operatorskit.bof_dir .. "CaptureNetNTLM/capturenetntlm" .. ".o"
+    local bof_path = bof_dir .. "CaptureNetNTLM/capturenetntlm" .. ".o"
     return bof(session, script_resource(bof_path), args , true)
 end
-command("operatorskit:capturenetntlm", operatorskit.run_capturenetntlm, "Command: operatorskit capturenetntlm", "T1557.001")
+command("operatorskit:capturenetntlm", run_capturenetntlm, "Command: operatorskit capturenetntlm", "T1557.001")
 
 -- Credprompt
-function operatorskit.parse_credprompt(args)
+local function parse_credprompt(args)
     if #args < 2 then
         error("Please provide title and message.")
     end
@@ -147,16 +146,16 @@ function operatorskit.parse_credprompt(args)
     local timer = args[3] or 60
     return bof_pack("ZZi", title, message, timer)
 end
-function operatorskit.run_credprompt(args)
+local function run_credprompt(args)
     local session = active()
-    args = operatorskit.parse_credprompt(args)
-    local bof_path = operatorskit.bof_dir .. "CredPrompt/credprompt" .. ".o"
+    args = parse_credprompt(args)
+    local bof_path = bof_dir .. "CredPrompt/credprompt" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:credprompt", operatorskit.run_credprompt, 'Command: operatorskit credprompt "<title>" "<message>" [timeout]', "T1056.004")
+command("operatorskit:credprompt", run_credprompt, 'Command: operatorskit credprompt "<title>" "<message>" [timeout]', "T1056.004")
 
 -- Delexclusion
-function operatorskit.parse_delexclusion(args)
+local function parse_delexclusion(args)
     if #args < 2 then
         error("Please provide exclusion type and data.")
     end
@@ -164,16 +163,16 @@ function operatorskit.parse_delexclusion(args)
     local excldata = args[2]
     return bof_pack("zZ", excltype, excldata)
 end
-function operatorskit.run_delexclusion(args)
+local function run_delexclusion(args)
     local session = active()
-    args = operatorskit.parse_delexclusion(args)
-    local bof_path = operatorskit.bof_dir .. "DelExclusion/delexclusion" .. ".o"
+    args = parse_delexclusion(args)
+    local bof_path = bof_dir .. "DelExclusion/delexclusion" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:delexclusion", operatorskit.run_delexclusion, 'Command: operatorskit delexclusion <exclusion type> <exclusion data>', "T1562.001")
+command("operatorskit:delexclusion", run_delexclusion, 'Command: operatorskit delexclusion <exclusion type> <exclusion data>', "T1562.001")
 
 -- Delfirewallrule
-function operatorskit.parse_delfirewallrule(args)
+local function parse_delfirewallrule(args)
     if #args < 1 then
         error("Please specify the name of the firewall rule you want to delete.")
     end
@@ -181,16 +180,16 @@ function operatorskit.parse_delfirewallrule(args)
     return bof_pack("Z", name)
 end
 -- Delfirewallrule
-function operatorskit.run_delfirewallrule(args)
+local function run_delfirewallrule(args)
     local session = active()
-    args = operatorskit.parse_delfirewallrule(args)
-    local bof_path = operatorskit.bof_dir .. "DelFirewallRule/delfirewallrule" .. ".o"
+    args = parse_delfirewallrule(args)
+    local bof_path = bof_dir .. "DelFirewallRule/delfirewallrule" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:delfirewallrule", operatorskit.run_delfirewallrule, 'Command: operatorskit delfirewallrule <name>', "T1562.004")
+command("operatorskit:delfirewallrule", run_delfirewallrule, 'Command: operatorskit delfirewallrule <name>', "T1562.004")
 
 -- Dellocalcert
-function operatorskit.parse_dellocalcert(args)
+local function parse_dellocalcert(args)
     if #args < 2 then
         error("Please provide both store name and thumbprint.")
     end
@@ -198,16 +197,16 @@ function operatorskit.parse_dellocalcert(args)
     local thumbprint = args[2]
     return bof_pack("Zz", store, thumbprint)
 end
-function operatorskit.run_dellocalcert(args)
+local function run_dellocalcert(args)
     local session = active()
-    args = operatorskit.parse_dellocalcert(args)
-    local bof_path = operatorskit.bof_dir .. "DelLocalCert/dellocalcert" .. ".o"
+    args = parse_dellocalcert(args)
+    local bof_path = bof_dir .. "DelLocalCert/dellocalcert" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:dellocalcert", operatorskit.run_dellocalcert, 'Command: operatorskit dellocalcert <store name> <thumbprint>', "T1553.003")
+command("operatorskit:dellocalcert", run_dellocalcert, 'Command: operatorskit dellocalcert <store name> <thumbprint>', "T1553.003")
 
 -- Deltaskscheduler
-function operatorskit.parse_deltaskscheduler(args)
+local function parse_deltaskscheduler(args)
     if #args < 1 then
         error("Please specify the name of the scheduled task.")
     end
@@ -215,16 +214,16 @@ function operatorskit.parse_deltaskscheduler(args)
     local host = args[2] or ""
     return bof_pack("ZZ", taskName, host)
 end
-function operatorskit.run_deltaskscheduler(args)
+local function run_deltaskscheduler(args)
     local session = active()
-    args = operatorskit.parse_deltaskscheduler(args)
-    local bof_path = operatorskit.bof_dir .. "DelTaskScheduler/deltaskscheduler" .. ".o"
+    args = parse_deltaskscheduler(args)
+    local bof_path = bof_dir .. "DelTaskScheduler/deltaskscheduler" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:deltaskscheduler", operatorskit.run_deltaskscheduler, 'Command: operatorskit deltaskscheduler <taskName> [host]', "T1053.005")
+command("operatorskit:deltaskscheduler", run_deltaskscheduler, 'Command: operatorskit deltaskscheduler <taskName> [host]', "T1053.005")
 
 -- Dllenvhijacking
-function operatorskit.parse_dllenvhijacking(args)
+local function parse_dllenvhijacking(args)
     if #args < 5 then
         error("Please provide sysroot, proxy DLL, path to DLL, vulnerable binary, and parent PID.")
     end
@@ -235,45 +234,45 @@ function operatorskit.parse_dllenvhijacking(args)
     local pid = args[5]
     return bof_pack("ZZZzi", sysroot, proxydll, pathtodll, vulnbinary, pid)
 end
-function operatorskit.run_dllenvhijacking(args)
+local function run_dllenvhijacking(args)
     local session = active()
-    args = operatorskit.parse_dllenvhijacking(args)
-    local bof_path = operatorskit.bof_dir .. "DllEnvHijacking/dllenvhijacking" .. ".o"
+    args = parse_dllenvhijacking(args)
+    local bof_path = bof_dir .. "DllEnvHijacking/dllenvhijacking" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:dllenvhijacking", operatorskit.run_dllenvhijacking, 'Command: operatorskit dllenvhijacking <sysroot> <proxy DLL> <path to DLL> <vulnerable binary> <parent PID>', "T1574.001")
+command("operatorskit:dllenvhijacking", run_dllenvhijacking, 'Command: operatorskit dllenvhijacking <sysroot> <proxy DLL> <path to DLL> <vulnerable binary> <parent PID>', "T1574.001")
 
 -- Enumlocalcert
-function operatorskit.parse_enumlocalcert(args)
+local function parse_enumlocalcert(args)
     if #args < 1 then
         error("Please specify a valid certificate store name.")
     end
     local store = args[1]
     return bof_pack("Z", store)
 end
-function operatorskit.run_enumlocalcert(args)
+local function run_enumlocalcert(args)
     local session = active()
-    args = operatorskit.parse_enumlocalcert(args)
-    local bof_path = operatorskit.bof_dir .. "EnumLocalCert/enumlocalcert" .. ".o"
+    args = parse_enumlocalcert(args)
+    local bof_path = bof_dir .. "EnumLocalCert/enumlocalcert" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumlocalcert", operatorskit.run_enumlocalcert, 'Command: operatorskit enumlocalcert <store name>', "T1553.003")
+command("operatorskit:enumlocalcert", run_enumlocalcert, 'Command: operatorskit enumlocalcert <store name>', "T1553.003")
 
 -- Enumsecproducts
-function operatorskit.parse_enumsecproducts(args)
+local function parse_enumsecproducts(args)
     local remotehost = args[1] or ""
     return bof_pack("z", remotehost)
 end
-function operatorskit.run_enumsecproducts(args)
+local function run_enumsecproducts(args)
     local session = active()
-    args = operatorskit.parse_enumsecproducts(args)
-    local bof_path = operatorskit.bof_dir .. "EnumSecProducts/enumsecproducts" .. ".o"
+    args = parse_enumsecproducts(args)
+    local bof_path = bof_dir .. "EnumSecProducts/enumsecproducts" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumsecproducts", operatorskit.run_enumsecproducts, 'Command: operatorskit enumsecproducts [remotehost]', "T1518.001")
+command("operatorskit:enumsecproducts", run_enumsecproducts, 'Command: operatorskit enumsecproducts [remotehost]', "T1518.001")
 
 -- Enumshares
-function operatorskit.parse_enumshares(args)
+local function parse_enumshares(args)
     if #args < 1 then
         error("Please specify the path to the hostname file.")
     end
@@ -281,61 +280,61 @@ function operatorskit.parse_enumshares(args)
     local file = read(path)
     return bof_pack("b", file)
 end
-function operatorskit.run_enumshares(args)
+local function run_enumshares(args)
     local session = active()
-    args = operatorskit.parse_enumshares(args)
-    local bof_path = operatorskit.bof_dir .. "EnumShares/enumshares" .. ".o"
+    args = parse_enumshares(args)
+    local bof_path = bof_dir .. "EnumShares/enumshares" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumshares", operatorskit.run_enumshares, 'Command: operatorskit enumshares <path to hostname file>', "T1135")
+command("operatorskit:enumshares", run_enumshares, 'Command: operatorskit enumshares <path to hostname file>', "T1135")
 
 -- Enumtaskscheduler
-function operatorskit.parse_enumtaskscheduler(args)
+local function parse_enumtaskscheduler(args)
     local host = args[1] or ""
     return bof_pack("Z", host)
 end
-function operatorskit.run_enumtaskscheduler(args)
+local function run_enumtaskscheduler(args)
     local session = active()
-    args = operatorskit.parse_enumtaskscheduler(args)
-    local bof_path = operatorskit.bof_dir .. "EnumTaskScheduler/enumtaskscheduler" .. ".o"
+    args = parse_enumtaskscheduler(args)
+    local bof_path = bof_dir .. "EnumTaskScheduler/enumtaskscheduler" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumtaskscheduler", operatorskit.run_enumtaskscheduler, 'Command: operatorskit enumtaskscheduler [host]', "T1053")
+command("operatorskit:enumtaskscheduler", run_enumtaskscheduler, 'Command: operatorskit enumtaskscheduler [host]', "T1053")
 
 -- Enumwsc
-function operatorskit.parse_enumwsc(args)
+local function parse_enumwsc(args)
     if #args < 1 then
         error("Please specify one of the following options: av | fw | as.")
     end
     local option = args[1]
     return bof_pack("z", option)
 end
-function operatorskit.run_enumwsc(args)
+local function run_enumwsc(args)
     local session = active()
-    args = operatorskit.parse_enumwsc(args)
-    local bof_path = operatorskit.bof_dir .. "EnumWSC/enumwsc" .. ".o"
+    args = parse_enumwsc(args)
+    local bof_path = bof_dir .. "EnumWSC/enumwsc" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumwsc", operatorskit.run_enumwsc, 'Command: operatorskit enumwsc <option>', "T1518.001")
+command("operatorskit:enumwsc", run_enumwsc, 'Command: operatorskit enumwsc <option>', "T1518.001")
 
 -- Enumdotnet
-function operatorskit.run_enumdotnet()
+local function run_enumdotnet()
     local session = active()
-    local bof_path = operatorskit.bof_dir .. "EnumDotnet/enumdotnet" .. ".o"
+    local bof_path = bof_dir .. "EnumDotnet/enumdotnet" .. ".o"
     return bof(session, script_resource(bof_path), {}, true)
 end
-command("operatorskit:enumdotnet", operatorskit.run_enumdotnet, "Command: operatorskit enumdotnet", "T1033")
+command("operatorskit:enumdotnet", run_enumdotnet, "Command: operatorskit enumdotnet", "T1033")
 
 -- Enumexclusions
-function operatorskit.run_enumexclusions()
+local function run_enumexclusions()
     local session = active()
-    local bof_path = operatorskit.bof_dir .. "EnumExclusions/enumexclusions" .. ".o"
+    local bof_path = bof_dir .. "EnumExclusions/enumexclusions" .. ".o"
     return bof(session, script_resource(bof_path),{}, true)
 end
-command("operatorskit:enumexclusions", operatorskit.run_enumexclusions, "Command: operatorskit enumexclusions", "T1518.001")
+command("operatorskit:enumexclusions", run_enumexclusions, "Command: operatorskit enumexclusions", "T1518.001")
 
 -- Enumfiles
-function operatorskit.parse_enumfiles(args)
+local function parse_enumfiles(args)
     if #args < 2 then
         error("Please provide the directory path and search pattern.")
     end
@@ -344,16 +343,16 @@ function operatorskit.parse_enumfiles(args)
     local keyword = args[3] or ""
     return bof_pack("zzz", lpDirectory, lpSearchPattern, keyword)
 end
-function operatorskit.run_enumfiles(args)
+local function run_enumfiles(args)
     local session = active()
-    args = operatorskit.parse_enumfiles(args)
-    local bof_path = operatorskit.bof_dir .. "EnumFiles/enumfiles" .. ".o"
+    args = parse_enumfiles(args)
+    local bof_path = bof_dir .. "EnumFiles/enumfiles" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumfiles", operatorskit.run_enumfiles, 'Command: operatorskit enumfiles <directory> <search pattern> [keyword]', "T1083")
+command("operatorskit:enumfiles", run_enumfiles, 'Command: operatorskit enumfiles <directory> <search pattern> [keyword]', "T1083")
 
 -- Enumhandles
-function operatorskit.parse_enumhandles(args)
+local function parse_enumhandles(args)
     if #args < 2 then
         error("Please specify a search option and handle type.")
     end
@@ -369,16 +368,16 @@ function operatorskit.parse_enumhandles(args)
     end
     return bof_pack(pid == "" and "zz" or "zzi", search, query, pid)
 end
-function operatorskit.run_enumhandles(args)
+local function run_enumhandles(args)
     local session = active()
-    args = operatorskit.parse_enumhandles(args)
-    local bofpath = operatorskit.bof_dir .. "EnumHandles/enumhandles" .. ".o"
+    args = parse_enumhandles(args)
+    local bofpath = bof_dir .. "EnumHandles/enumhandles" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumhandles", operatorskit.run_enumhandles, 'Command: operatorskit enumhandles <search option> <handle type> [PID]', "T1057")
+command("operatorskit:enumhandles", run_enumhandles, 'Command: operatorskit enumhandles <search option> <handle type> [PID]', "T1057")
 
 -- Enumlib
-function operatorskit.parse_enumlib(args)
+local function parse_enumlib(args)
     if #args < 2 then
         error("Please specify an enumeration option and a target.")
     end
@@ -390,32 +389,32 @@ function operatorskit.parse_enumlib(args)
     end
     return bof_pack(option == "search" and "zz" or "zi", option, target)
 end
-function operatorskit.run_enumlib(args)
+local function run_enumlib(args)
     local session = active()
-    args = operatorskit.parse_enumlib(args)
-    local bof_path = operatorskit.bof_dir .. "EnumLib/enumlib" .. ".o"
+    args = parse_enumlib(args)
+    local bof_path = bof_dir .. "EnumLib/enumlib" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumlib", operatorskit.run_enumlib, 'Command: operatorskit enumlib <search | list> <target>', "T1059.001")
+command("operatorskit:enumlib", run_enumlib, 'Command: operatorskit enumlib <search | list> <target>', "T1059.001")
 
 -- Enumrwx
-function operatorskit.parse_enumrwx(args)
+local function parse_enumrwx(args)
     if #args < 1 then
         error("Please provide the PID.")
     end
     local pid = args[1]
     return bof_pack("i", pid)
 end
-function operatorskit.run_enumrwx(args)
+local function run_enumrwx(args)
     local session = active()
-    args = operatorskit.parse_enumrwx(args)
-    local bof_path = operatorskit.bof_dir .. "EnumRWX/enumrwx" .. ".o"
+    args = parse_enumrwx(args)
+    local bof_path = bof_dir .. "EnumRWX/enumrwx" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumrwx", operatorskit.run_enumrwx, 'Command: operatorskit enumrwx <PID>', "T1057")
+command("operatorskit:enumrwx", run_enumrwx, 'Command: operatorskit enumrwx <PID>', "T1057")
 
 -- Enumsysmon
-function operatorskit.parse_enumsysmon(args)
+local function parse_enumsysmon(args)
     if #args < 1 then
         error("Please specify one of the following enumeration options: reg | driver.")
     end
@@ -425,16 +424,16 @@ function operatorskit.parse_enumsysmon(args)
     end
     return bof_pack("z", action)
 end
-function operatorskit.run_enumsysmon(args)
+local function run_enumsysmon(args)
     local session = active()
-    args = operatorskit.parse_enumsysmon(args)
-    local bof_path = operatorskit.bof_dir .. "EnumSysmon/enumsysmon" .. ".o"
+    args = parse_enumsysmon(args)
+    local bof_path = bof_dir .. "EnumSysmon/enumsysmon" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumsysmon", operatorskit.run_enumsysmon, 'Command: operatorskit enumsysmon <option>', "T1569.002")
+command("operatorskit:enumsysmon", run_enumsysmon, 'Command: operatorskit enumsysmon <option>', "T1569.002")
 
 -- Enumwebclient
-function operatorskit.parse_enumwebclient(args)
+local function parse_enumwebclient(args)
     if #args < 1 then
         error("Please provide the path to the hostname file.")
     end
@@ -443,24 +442,24 @@ function operatorskit.parse_enumwebclient(args)
     local file = read(path)
     return bof_pack("bz", file, debug)
 end
-function operatorskit.run_enumwebclient(args)
+local function run_enumwebclient(args)
     local session = active()
-    args = operatorskit.parse_enumwebclient(args)
-    local bof_path = operatorskit.bof_dir .. "EnumWebClient/enumwebclient" .. ".o"
+    args = parse_enumwebclient(args)
+    local bof_path = bof_dir .. "EnumWebClient/enumwebclient" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumwebclient", operatorskit.run_enumwebclient, 'Command: operatorskit enumwebclient <path to hostname file> [debug]', "T1016")
+command("operatorskit:enumwebclient", run_enumwebclient, 'Command: operatorskit enumwebclient <path to hostname file> [debug]', "T1016")
 
 -- Forcelockscreen
-function operatorskit.run_forcelockscreen()
+local function run_forcelockscreen()
     local session = active()
-    local bof_path = operatorskit.bof_dir .. "ForceLockScreen/forcelockscreen" .. ".o"
+    local bof_path = bof_dir .. "ForceLockScreen/forcelockscreen" .. ".o"
     return bof(session, script_resource(bof_path), {}, true)
 end
-command("operatorskit:forcelockscreen", operatorskit.run_forcelockscreen, "Command: operatorskit forcelockscreen", "T1569")
+command("operatorskit:forcelockscreen", run_forcelockscreen, "Command: operatorskit forcelockscreen", "T1569")
 
 -- Hidefile
-function operatorskit.parse_hidefile(args)
+local function parse_hidefile(args)
     if #args < 2 then
         error("Please specify the option (dir | file) and the path to the target.")
     end
@@ -471,24 +470,24 @@ function operatorskit.parse_hidefile(args)
     end
     return bof_pack("zZ", option, path)
 end
-function operatorskit.run_hidefile(args)
+local function run_hidefile(args)
     local session = active()
-    args = operatorskit.parse_hidefile(args)
-    local bof_path = operatorskit.bof_dir .. "HideFile/hidefile" .. ".o"
+    args = parse_hidefile(args)
+    local bof_path = bof_dir .. "HideFile/hidefile" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:hidefile", operatorskit.run_hidefile, 'Command: operatorskit hidefile <option> <path>', "T1070.004")
+command("operatorskit:hidefile", run_hidefile, 'Command: operatorskit hidefile <option> <path>', "T1070.004")
 
 -- Idletime
-function operatorskit.run_idletime()
+local function run_idletime()
     local session = active()
-    local bof_path = operatorskit.bof_dir .. "IdleTime/idletime" .. ".o"
+    local bof_path = bof_dir .. "IdleTime/idletime" .. ".o"
     return bof(session, script_resource(bof_path), {}, true)
 end
-command("operatorskit:idletime", operatorskit.run_idletime, "Command: operatorskit idletime", "T1202")
+command("operatorskit:idletime", run_idletime, "Command: operatorskit idletime", "T1202")
 
 -- Loadlib
-function operatorskit.parse_loadlib(args)
+local function parse_loadlib(args)
     if #args < 2 then
         error("Please provide both the PID and path to the DLL.")
     end
@@ -496,56 +495,56 @@ function operatorskit.parse_loadlib(args)
     local path = args[2]
     return bof_pack("iz", pid, path)
 end
-function operatorskit.run_loadlib(args)
+local function run_loadlib(args)
     local session = active()
-    args = operatorskit.parse_loadlib(args)
-    local bof_path = operatorskit.bof_dir .. "LoadLib/loadlib" .. ".o"
+    args = parse_loadlib(args)
+    local bof_path = bof_dir .. "LoadLib/loadlib" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:loadlib", operatorskit.run_loadlib, 'Command: operatorskit loadlib <PID> <path to DLL>', "T1055.001")
+command("operatorskit:loadlib", run_loadlib, 'Command: operatorskit loadlib <PID> <path to DLL>', "T1055.001")
 
 -- Psremote
-function operatorskit.parse_psremote(args)
+local function parse_psremote(args)
     if #args < 1 then
         error("Please provide the FQDN or IP of the remote host.")
     end
     local remotehost = args[1]
     return bof_pack("z", remotehost)
 end
-function operatorskit.run_psremote(args)
+local function run_psremote(args)
     local session = active()
-    args = operatorskit.parse_psremote(args)
-    local bof_path = operatorskit.bof_dir .. "PSremote/psremote" .. ".o"
+    args = parse_psremote(args)
+    local bof_path = bof_dir .. "PSremote/psremote" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:psremote", operatorskit.run_psremote, 'Command: operatorskit psremote <FQDN or IP>', "T1021")
+command("operatorskit:psremote", run_psremote, 'Command: operatorskit psremote <FQDN or IP>', "T1021")
 
 -- Silencesysmon
-function operatorskit.parse_silencesysmon(args)
+local function parse_silencesysmon(args)
     if #args ~= 1 then
         error("Please provide the Sysmon process ID (PID).")
     end
     local pid = args[1]
     return bof_pack("i", pid)
 end
-function operatorskit.run_silencesysmon(args)
+local function run_silencesysmon(args)
     local session = active()
-    args = operatorskit.parse_silencesysmon(args)
-    local bof_path = operatorskit.bof_dir .. "SilenceSysmon/silencesysmon" .. ".o"
+    args = parse_silencesysmon(args)
+    local bof_path = bof_dir .. "SilenceSysmon/silencesysmon" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:silencesysmon", operatorskit.run_silencesysmon, 'Command: operatorskit silencesysmon <PID>', "T1562.002")
+command("operatorskit:silencesysmon", run_silencesysmon, 'Command: operatorskit silencesysmon <PID>', "T1562.002")
 
 -- Systeminfo
-function operatorskit.run_systeminfo()
+local function run_systeminfo()
     local session = active()
-    local bof_path = operatorskit.bof_dir .. "SystemInfo/systeminfo" .. ".o"
+    local bof_path = bof_dir .. "SystemInfo/systeminfo" .. ".o"
     return bof(session, script_resource(bof_path), {}, true)
 end
-command("operatorskit:systeminfo", operatorskit.run_systeminfo, "Command: operatorskit systeminfo", "T1082")
+command("operatorskit:systeminfo", run_systeminfo, "Command: operatorskit systeminfo", "T1082")
 
 -- Dllcomhijacking
-function operatorskit.parse_dllcomhijacking(args)
+local function parse_dllcomhijacking(args)
     if #args < 2 then
         error("Please provide the CLSID and target.")
     end
@@ -553,16 +552,16 @@ function operatorskit.parse_dllcomhijacking(args)
     local target = args[2]
     return bof_pack("ZZ", clsid, target)
 end
-function operatorskit.run_dllcomhijacking(args)
+local function run_dllcomhijacking(args)
     local session = active()
-    args = operatorskit.parse_dllcomhijacking(args)
-    local bof_path = operatorskit.bof_dir .. "DllComHijacking/dllcomhijacking" .. ".o"
+    args = parse_dllcomhijacking(args)
+    local bof_path = bof_dir .. "DllComHijacking/dllcomhijacking" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:dllcomhijacking", operatorskit.run_dllcomhijacking, 'Command: operatorskit dllcomhijacking <CLSID> <target>', "T1574.001")
+command("operatorskit:dllcomhijacking", run_dllcomhijacking, 'Command: operatorskit dllcomhijacking <CLSID> <target>', "T1574.001")
 
 -- Injectpoolparty todo
-function operatorskit.parse_injectpoolparty(args)
+local function parse_injectpoolparty(args)
     if #args < 3 then
         error("Please provide the execution variant, process ID, and listener.")
     end
@@ -581,24 +580,24 @@ function operatorskit.parse_injectpoolparty(args)
     local sc_data = artifact_payload(listener, "raw", "x64", "process", "Indirect")
     return bof_pack("zib", variant, pid, sc_data)
 end
-function operatorskit.run_injectpoolparty(args)
+local function run_injectpoolparty(args)
     local session = active()
-    args = operatorskit.parse_injectpoolparty(args)
-    local bof_path = operatorskit.bof_dir .. "InjectPoolParty/injectpoolparty" .. ".o"
+    args = parse_injectpoolparty(args)
+    local bof_path = bof_dir .. "InjectPoolParty/injectpoolparty" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:injectpoolparty", operatorskit.run_injectpoolparty, 'Command: operatorskit injectpoolparty <variant> <PID> <listener>', "T1055.012")
+command("operatorskit:injectpoolparty", run_injectpoolparty, 'Command: operatorskit injectpoolparty <variant> <PID> <listener>', "T1055.012")
 
 -- Enumdrives
-function operatorskit.run_enumdrives(args)
+local function run_enumdrives(args)
     local session = active()
-    local bof_path = operatorskit.bof_dir .. "EnumDrives/enumdrives" .. ".o"
+    local bof_path = bof_dir .. "EnumDrives/enumdrives" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:enumdrives", operatorskit.run_enumdrives, 'Command: operatorskit enumdrives', "T1135")
+command("operatorskit:enumdrives", run_enumdrives, 'Command: operatorskit enumdrives', "T1135")
 
 -- Passwordspray
-function operatorskit.parse_passwordspray(args)
+local function parse_passwordspray(args)
     if #args < 3 then
         error("Please provide the path to the username file, password, and domain.")
     end
@@ -611,16 +610,16 @@ function operatorskit.parse_passwordspray(args)
     print(password, domain, timer, jitter)
     return bof_pack("bZZii", file, password, domain, timer, jitter)
 end
-function operatorskit.run_passwordspray(args)
+local function run_passwordspray(args)
     local session = active()
-    args = operatorskit.parse_passwordspray(args)
-    local bof_path = operatorskit.bof_dir .. "PasswordSpray/passwordspray" .. ".o"
+    args = parse_passwordspray(args)
+    local bof_path = bof_dir .. "PasswordSpray/passwordspray" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:passwordspray", operatorskit.run_passwordspray, 'Command: operatorskit passwordspray <path to username file> <password> <domain> [timer] [jitter]', "T1110.003")
+command("operatorskit:passwordspray", run_passwordspray, 'Command: operatorskit passwordspray <path to username file> <password> <domain> [timer] [jitter]', "T1110.003")
 
 -- Executecrosssession
-function operatorskit.parse_executecrosssession(args)
+local function parse_executecrosssession(args)
     if #args < 2 then
         error("Please provide the binary path and session ID.")
     end
@@ -628,10 +627,10 @@ function operatorskit.parse_executecrosssession(args)
     local sessionid = args[2]
     return bof_pack("Zi", binarypath, sessionid)
 end
-function operatorskit.run_executecrosssession(args)
+local function run_executecrosssession(args)
     local session = active()
-    args = operatorskit.parse_executecrosssession(args)
-    local bof_path = operatorskit.bof_dir .. "ExecuteCrossSession/executecrosssession" .. ".o"
+    args = parse_executecrosssession(args)
+    local bof_path = bof_dir .. "ExecuteCrossSession/executecrosssession" .. ".o"
     return bof(session, script_resource(bof_path), args, true)
 end
-command("operatorskit:executecrosssession", operatorskit.run_executecrosssession, 'Command: operatorskit executecrosssession <binary path> <session ID>', "T1569.002")
+command("operatorskit:executecrosssession", run_executecrosssession, 'Command: operatorskit executecrosssession <binary path> <session ID>', "T1569.002")
