@@ -42,7 +42,7 @@ bind_args_completer(rem_connect_cmd, { rem_completer() })
 
 function run_rem_fork(arg_0, arg_1, flag_mod, flag_remote_url, flag_local_url)
     local rpc = require("rpc")
-    local task = rpc.RemCtrl(active():Context(), ProtobufMessage.New("clientpb.REMAgent", {
+    local task = rpc.RemAgentCtrl(active():Context(), ProtobufMessage.New("clientpb.REMAgent", {
         PipelineId = arg_0,
         Id = arg_1,
         Args = { "-r", flag_remote_url, "-l", flag_local_url, "-m", flag_mod },
@@ -66,7 +66,7 @@ bind_args_completer(rem_run_cmd, { rem_completer() })
 
 function get_rem_log(arg_0, arg_1)
     local rpc = require("rpc")
-    local log = rpc.RemLog(active():Context(), ProtobufMessage.New("clientpb.REMAgent", {
+    local log = rpc.RemAgentLog(active():Context(), ProtobufMessage.New("clientpb.REMAgent", {
         Id = arg_1,
         PipelineId = arg_0,
     }))
@@ -75,3 +75,15 @@ end
 
 local log_cmd = command("rem_community:log", get_rem_log, "get rem log", "")
 bind_args_completer(log_cmd, { rem_completer(), rem_agent_completer() })
+
+
+function run_rem_stop(arg_0, arg_1)
+    local rpc = require("rpc")
+    local task = rpc.RemAgentStop(active():Context(), ProtobufMessage.New("clientpb.REMAgent", {
+        PipelineId = arg_0,
+        Id = arg_1,
+    }))
+end
+
+local rem_stop_cmd = command("rem_community:stop", run_rem_stop, "stop rem", "")
+bind_args_completer(rem_stop_cmd, { rem_completer(), rem_agent_completer() })
