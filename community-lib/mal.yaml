@@ -1,0 +1,12 @@
+name: community-lib
+type: lua
+author: M09Ic
+version: v0.0.1
+entry: main.lua
+lib: true
+depend_module: 
+  - bof
+  - dllspawn
+  - powerpick
+
+
