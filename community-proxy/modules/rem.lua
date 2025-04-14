@@ -52,6 +52,7 @@ end
 local rem_fork = command("rem_community:fork", run_rem_fork, "fork rem", "")
 bind_args_completer(rem_fork, { rem_completer(), rem_agent_completer() })
 
+
 function run_rem(flag_pipe, args)
     local session = active()
     local arch = session.Os.Arch
@@ -62,7 +63,26 @@ function run_rem(flag_pipe, args)
 end
 
 local rem_run_cmd = command("rem_community:run", run_rem, "run rem", "")
-bind_args_completer(rem_run_cmd, { rem_completer() })
+bind_flags_completer(rem_run_cmd, { pipe = rem_completer() })
+
+
+function restart_rem_agent(arg_0, arg_1)
+    local session = active()
+    local arch = session.Os.Arch
+    local rem_path = "proxy/rem.exe"
+    local agent
+    for k, v in pairs(pivots()) do
+        if v.RemAgentId == arg_1 then
+            agent = v
+            break
+        end
+    end
+    local args = { "-r", agent.RemoteURL, "-l", agent.LocalURL, "-m", agent.Mod, "-a", agent.RemAgentId }
+    table.insert(args, "-c")
+    table.insert(args, rem_link(arg_0))
+
+    return execute_exe(session, script_resource(rem_path), args, true, 600, arch, "", new_sac())
+end
 
 function get_rem_log(arg_0, arg_1)
     local rpc = require("rpc")
