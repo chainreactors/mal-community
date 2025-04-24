@@ -24,7 +24,7 @@ local function run_netuseradd_bof(cmd)
     return bof(session, script_resource(bof_file), pack_args, true)
 end
 
-local netuseradd_bof_command = command_register("netuseradd_bof",
+local netuseradd_bof_command = command("common:netuseradd_bof",
                                                 run_netuseradd_bof,
                                                 "netuseradd_by_bof <username> <password>",
                                                 "")
