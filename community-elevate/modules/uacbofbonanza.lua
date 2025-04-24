@@ -171,7 +171,7 @@ local function run_EditionUpgradeManager(cmd)
     local file_content = file_content_handle:read("*all")
     file_content_handle:close()
     local content_len = string.len(file_content)
-    local pack_args = bof_pack("iz", content_len, file_content) -- string field contains invalid UTF-8
+    local pack_args = bof_pack("ib", content_len, file_content) -- string field contains invalid UTF-8
     return bof(session, script_resource(bof_file), pack_args, true)
 end
 local cmd_EditionUpgradeManager = command("uac-bypass:editionupgrade",

@@ -1,4 +1,3 @@
-local root_command= "proxy"
 local function new_sac()
     local sac = new_sacrifice(0,false,false,false,"")
     return sac
@@ -12,4 +11,4 @@ local function run_gost(args)
     local sac = new_sac()
     return execute_exe(session, pe_path, args, true, 60, arch, "", sac)
 end
-command( root_command.. ":gost", run_gost, "Usage: proxy gost -- <gost args>", "")
+command( "community-proxy:gost", run_gost, "Usage: proxy gost -- <gost args>", "")
