@@ -1,27 +1,6 @@
 -- Master Lua Script to load all Beacon Object Files from the 
 local bof_dir = "OperatorsKit/"
 
--- Addexclusion
-local function parse_addexclusion(args)
-    if #args < 2 then
-        error("Please specify one of the following exclusion types: path | process | extension.")
-    end
-    local excltype = args[1]
-    local excldata = args[2]
-
-    if excltype ~= "path" and excltype ~= "process" and excltype ~= "extension" then
-        error("This exclusion type isn't supported.")
-    end
-    return bof_pack("zZ", excltype, excldata)
-end
-local function run_addexclusion(args)
-    local session = active()
-    args = parse_addexclusion(args)
-    local bof_path = bof_dir .. "AddExclusion/addexclusion" .. ".o"
-    return bof(session, script_resource(bof_path), args, true)
-end
-command("operatorskit:addexclusion", run_addexclusion, "Command: operatorskit addexclusion <exclusion type> <exclusion data>", "T1562.001")
-
 --- Start Addfirewallrule
 local function parse_addfirewallrule(args)
     if #args < 3 then
@@ -154,23 +133,6 @@ local function run_credprompt(args)
 end
 command("operatorskit:credprompt", run_credprompt, 'Command: operatorskit credprompt "<title>" "<message>" [timeout]', "T1056.004")
 
--- Delexclusion
-local function parse_delexclusion(args)
-    if #args < 2 then
-        error("Please provide exclusion type and data.")
-    end
-    local excltype = args[1]
-    local excldata = args[2]
-    return bof_pack("zZ", excltype, excldata)
-end
-local function run_delexclusion(args)
-    local session = active()
-    args = parse_delexclusion(args)
-    local bof_path = bof_dir .. "DelExclusion/delexclusion" .. ".o"
-    return bof(session, script_resource(bof_path), args, true)
-end
-command("operatorskit:delexclusion", run_delexclusion, 'Command: operatorskit delexclusion <exclusion type> <exclusion data>', "T1562.001")
-
 -- Delfirewallrule
 local function parse_delfirewallrule(args)
     if #args < 1 then
@@ -242,22 +204,6 @@ local function run_dllenvhijacking(args)
 end
 command("operatorskit:dllenvhijacking", run_dllenvhijacking, 'Command: operatorskit dllenvhijacking <sysroot> <proxy DLL> <path to DLL> <vulnerable binary> <parent PID>', "T1574.001")
 
--- Enumlocalcert
-local function parse_enumlocalcert(args)
-    if #args < 1 then
-        error("Please specify a valid certificate store name.")
-    end
-    local store = args[1]
-    return bof_pack("Z", store)
-end
-local function run_enumlocalcert(args)
-    local session = active()
-    args = parse_enumlocalcert(args)
-    local bof_path = bof_dir .. "EnumLocalCert/enumlocalcert" .. ".o"
-    return bof(session, script_resource(bof_path), args, true)
-end
-command("operatorskit:enumlocalcert", run_enumlocalcert, 'Command: operatorskit enumlocalcert <store name>', "T1553.003")
-
 -- Enumsecproducts
 local function parse_enumsecproducts(args)
     local remotehost = args[1] or ""
@@ -316,40 +262,6 @@ local function run_enumwsc(args)
     return bof(session, script_resource(bof_path), args, true)
 end
 command("operatorskit:enumwsc", run_enumwsc, 'Command: operatorskit enumwsc <option>', "T1518.001")
-
--- Enumdotnet
-local function run_enumdotnet()
-    local session = active()
-    local bof_path = bof_dir .. "EnumDotnet/enumdotnet" .. ".o"
-    return bof(session, script_resource(bof_path), {}, true)
-end
-command("operatorskit:enumdotnet", run_enumdotnet, "Command: operatorskit enumdotnet", "T1033")
-
--- Enumexclusions
-local function run_enumexclusions()
-    local session = active()
-    local bof_path = bof_dir .. "EnumExclusions/enumexclusions" .. ".o"
-    return bof(session, script_resource(bof_path),{}, true)
-end
-command("operatorskit:enumexclusions", run_enumexclusions, "Command: operatorskit enumexclusions", "T1518.001")
-
--- Enumfiles
-local function parse_enumfiles(args)
-    if #args < 2 then
-        error("Please provide the directory path and search pattern.")
-    end
-    local lpDirectory = args[1]
-    local lpSearchPattern = args[2]
-    local keyword = args[3] or ""
-    return bof_pack("zzz", lpDirectory, lpSearchPattern, keyword)
-end
-local function run_enumfiles(args)
-    local session = active()
-    args = parse_enumfiles(args)
-    local bof_path = bof_dir .. "EnumFiles/enumfiles" .. ".o"
-    return bof(session, script_resource(bof_path), args, true)
-end
-command("operatorskit:enumfiles", run_enumfiles, 'Command: operatorskit enumfiles <directory> <search pattern> [keyword]', "T1083")
 
 -- Enumhandles
 local function parse_enumhandles(args)
@@ -535,14 +447,6 @@ local function run_silencesysmon(args)
 end
 command("operatorskit:silencesysmon", run_silencesysmon, 'Command: operatorskit silencesysmon <PID>', "T1562.002")
 
--- Systeminfo
-local function run_systeminfo()
-    local session = active()
-    local bof_path = bof_dir .. "SystemInfo/systeminfo" .. ".o"
-    return bof(session, script_resource(bof_path), {}, true)
-end
-command("operatorskit:systeminfo", run_systeminfo, "Command: operatorskit systeminfo", "T1082")
-
 -- Dllcomhijacking
 local function parse_dllcomhijacking(args)
     if #args < 2 then
@@ -587,14 +491,6 @@ local function run_injectpoolparty(args)
     return bof(session, script_resource(bof_path), args, true)
 end
 command("operatorskit:injectpoolparty", run_injectpoolparty, 'Command: operatorskit injectpoolparty <variant> <PID> <listener>', "T1055.012")
-
--- Enumdrives
-local function run_enumdrives(args)
-    local session = active()
-    local bof_path = bof_dir .. "EnumDrives/enumdrives" .. ".o"
-    return bof(session, script_resource(bof_path), args, true)
-end
-command("operatorskit:enumdrives", run_enumdrives, 'Command: operatorskit enumdrives', "T1135")
 
 -- Passwordspray
 local function parse_passwordspray(args)

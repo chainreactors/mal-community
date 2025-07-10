@@ -2,30 +2,6 @@
 local situational = {}
 situational.bof_dir = "SituationalAwareness/"
 
--- dir
-function situational.parse_dir(args)
-    if #args > 2 or #args <= 0 then error("<=2 arguments are allowed") end
-    local targetdir = '.\\'
-    local subdirs = "0"
-    if #args > 0 then targetdir = args[1] end
-    if #args == 2 and args[2] ~= '/s' then
-        error("Invalid parameter: " .. args[2])
-    end
-    if #args == 2 and args[2] == '/s' then subdirs = "1" end
-    return bof_pack("Zs", targetdir, subdirs)
-end
-
-function situational.run_dir(args)
-    local session = active()
-    args = situational.parse_dir(args)
-    local arch = session.Os.Arch
-    return bof(session, script_resource(
-                   situational.bof_dir .. "dir" .. "." .. arch .. ".o"), args,
-               true, callback_log(session, true))
-end
-command("situational:dir", situational.run_dir,
-        "Command: situational dir [targetdir] [/s]", "T1083")
-
 -- env
 function situational.parse_env(args)
     if #args ~= 0 then error("0 arguments are allowed") end
@@ -61,23 +37,6 @@ end
 command("situational:adcs_enum", situational.run_adcs_enum,
         "Command: situational adcs_enum [domain]", "T1557.002")
 
--- arp
-function situational.parse_arp(args)
-    if #args ~= 0 then error("0 arguments are allowed") end
-    return args
-end
-
-function situational.run_arp(args)
-    local session = active()
-    args = situational.parse_arp(args)
-    local arch = session.Os.Arch
-    return bof(session, script_resource(
-                   situational.bof_dir .. "arp" .. "." .. arch .. ".o"), args,
-               true)
-end
-command("situational:arp", situational.run_arp, "Command: situational arp",
-        "T1016")
-
 -- cacls
 function situational.parse_cacls(args)
     if #args ~= 1 then error("1 argument is allowed") end
@@ -112,24 +71,6 @@ function situational.run_driversigs(args)
 end
 command("situational:driversigs", situational.run_driversigs,
         "Command: situational driversigs", "T1012")
-
--- Enum Local Sessions
-function situational.parse_enumlocalsessions(args)
-    if #args ~= 0 then error("0 arguments are allowed") end
-    return args
-end
-
-function situational.run_enumlocalsessions(args)
-    local session = active()
-    args = situational.parse_enumlocalsessions(args)
-    local arch = session.Os.Arch
-    return bof(session,
-               script_resource(
-                   situational.bof_dir .. "enumlocalsessions" .. "." .. arch ..
-                       ".o"), args, true)
-end
-command("situational:enumlocalsessions", situational.run_enumlocalsessions,
-        "Command: situational enumlocalsessions", "T1078")
 
 -- get_password_policy
 function situational.parse_get_password_policy(args)
@@ -168,50 +109,6 @@ end
 command("situational:netsession", situational.run_netsession,
         "Command: situational netsession [computer]", "T1076")
 
--- ipconfig
-function situational.parse_ipconfig(args)
-    if #args ~= 0 then error("0 arguments are allowed") end
-    return args
-end
-
-function situational.run_ipconfig(args)
-    local session = active()
-    args = situational.parse_ipconfig(args)
-    local arch = session.Os.Arch
-    return bof(session, script_resource(
-                   situational.bof_dir .. "ipconfig" .. "." .. arch .. ".o"),
-               args, true)
-end
-command("situational:ipconfig", situational.run_ipconfig,
-        "Command: situational ipconfig", "T1016")
-
--- ldapsearch
-function situational.parse_ldapsearch(args)
-    if #args < 1 or #args > 5 then error("1<=x<=5 arguments are allowed") end
-    local query = args[1]
-    local attributes = ''
-    local result_limit = 0
-    local hostname = ''
-    local domain = ''
-    if #args >= 2 then attributes = args[2] end
-    if #args >= 3 then result_limit = args[3] end
-    if #args >= 4 then hostname = args[4] end
-    if #args == 5 then domain = args[5] end
-    return bof_pack("zzszz", query, attributes, result_limit, hostname, domain)
-end
-
-function situational.run_ldapsearch(args)
-    local session = active()
-    args = situational.parse_ldapsearch(args)
-    local arch = session.Os.Arch
-    return bof(session, script_resource(
-                   situational.bof_dir .. "ldapsearch" .. "." .. arch .. ".o"),
-               args, true)
-end
-command("situational:ldapsearch", situational.run_ldapsearch,
-        "Command: situational ldapsearch <query> [attributes] [result_limit] [hostname] [domain]",
-        "T1018")
-
 -- list_firewall_rules
 function situational.parse_list_firewall_rules(args)
     if #args ~= 0 then error("0 arguments are allowed") end
@@ -229,23 +126,6 @@ function situational.run_list_firewall_rules(args)
 end
 command("situational:list_firewall_rules", situational.run_list_firewall_rules,
         "Command: situational list_firewall_rules", "T1562.004")
-
--- listdns
-function situational.parse_listdns(args)
-    if #args ~= 0 then error("0 arguments are allowed") end
-    return args
-end
-
-function situational.run_listdns(args)
-    local session = active()
-    args = situational.parse_listdns(args)
-    local arch = session.Os.Arch
-    return bof(session, script_resource(
-                   situational.bof_dir .. "listdns" .. "." .. arch .. ".o"),
-               args, true)
-end
-command("situational:listdns", situational.run_listdns,
-        "Command: situational listdns", "T1016")
 
 -- locale
 function situational.parse_locale(args)
@@ -445,75 +325,6 @@ end
 command("situational:netview", situational.run_netview,
         "Command: situational netview [computer]", "T1018")
 
--- nslookup
-function situational.parse_nslookup(args)
-    if #args < 1 then
-        error("Missing parameters: at least 1 argument is required")
-    elseif #args > 3 then
-        error("Too many parameters: 1 to 3 arguments are allowed")
-    end
-
-    local recordmapping = {
-        A = 1,
-        NS = 2,
-        MD = 3,
-        MF = 4,
-        CNAME = 5,
-        SOA = 6,
-        MB = 7,
-        MG = 8,
-        MR = 9,
-        WKS = 0xb,
-        PTR = 0xc,
-        HINFO = 0xd,
-        MINFO = 0xe,
-        MX = 0xf,
-        TEXT = 0x10,
-        RP = 0x11,
-        AFSDB = 0x12,
-        X25 = 0x13,
-        ISDN = 0x14,
-        RT = 0x15,
-        AAAA = 0x1c,
-        SRV = 0x21,
-        WINSR = 0xff02,
-        KEY = 0x19,
-        ANY = 0xff
-    }
-
-    local lookup = args[1]
-    local server = ''
-    if #args >= 2 then
-        server = args[2]
-        if server == "127.0.0.1" then
-            error("Localhost DNS queries have a potential to crash, refusing")
-        end
-    end
-
-    local record_type = recordmapping["A"]
-    if #args == 3 then
-        local requested_type = args[3]:upper()
-        if recordmapping[requested_type] then
-            record_type = recordmapping[requested_type]
-        else
-            error("Invalid record type: " .. requested_type)
-        end
-    end
-
-    return bof_pack("zzs", lookup, server, record_type)
-end
-
-function situational.run_nslookup(args)
-    local session = active()
-    args = situational.parse_nslookup(args)
-    local arch = session.Os.Arch
-    return bof(session, script_resource(
-                   situational.bof_dir .. "nslookup" .. "." .. arch .. ".o"),
-               args, true)
-end
-command("situational:nslookup", situational.run_nslookup,
-        "Command: situational nslookup <lookup> [server] [record type]", "T1016")
-
 -- quser
 function situational.parse_quser(args)
     local hostname = '127.0.0.1'
@@ -588,18 +399,6 @@ function situational.run_resources(args)
 end
 command("situational:resources", situational.run_resources,
         "Command: situational resources", "T1082")
-
--- routeprint
-function situational.run_routeprint(args)
-    if #args ~= 0 then error("0 arguments are allowed") end
-    local session = active()
-    local arch = session.Os.Arch
-    return bof(session, script_resource(
-                   situational.bof_dir .. "routeprint" .. "." .. arch .. ".o"),
-               args, true)
-end
-command("situational:routeprint", situational.run_routeprint,
-        "Command: situational routeprint", "T1016")
 
 -- sc_enum
 function situational.parse_sc_enum(args)
@@ -831,30 +630,6 @@ function situational.run_tasklist(args)
 end
 command("situational:tasklist", situational.run_tasklist,
         "Command: situational tasklist [hostname]", "T1057")
-
--- uptime
-function situational.run_uptime(args)
-    if #args ~= 0 then error("0 arguments are allowed") end
-    local session = active()
-    local arch = session.Os.Arch
-    return bof(session, script_resource(
-                   situational.bof_dir .. "uptime" .. "." .. arch .. ".o"),
-               args, true)
-end
-command("situational:uptime", situational.run_uptime,
-        "Command: situational uptime", "T1124")
-
--- whoami
-function situational.run_whoami(args)
-    if #args ~= 0 then error("0 arguments are allowed") end
-    local session = active()
-    local arch = session.Os.Arch
-    return bof(session, script_resource(
-                   situational.bof_dir .. "whoami" .. "." .. arch .. ".o"),
-               args, true)
-end
-command("situational:whoami", situational.run_whoami,
-        "Command: situational whoami", "T1033")
 
 -- windowlist
 function situational.run_windowlist(args)
